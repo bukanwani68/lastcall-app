@@ -1,57 +1,135 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-stone-800 leading-tight">
-            {{ __('Tambah Produk Surplus Baru') }}
-        </h2>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>➕ Tambah Produk Surplus</span>
+                </h2>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 1rem;">
+                    Daftarkan makanan surplus toko Anda agar tidak terbuang dan bisa dibeli pelanggan LastCall.
+                </p>
+            </div>
+            <a href="{{ url('/merchant/products') }}" style="background-color: #f1f5f9; color: #475569; font-size: 0.85rem; font-weight: 700; padding: 0.5rem 1rem; border-radius: 0.75rem; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
+                &larr; Kembali ke Kelola Produk
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div style="padding: 2rem 0; background-color: #f8fafc; min-height: 85vh;">
+        <div style="max-width: 1250px; margin: 0 auto; padding: 0 1rem;">
+
+            <div style="background-color: #ffffff; border-radius: 1.25rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow: hidden;">
                 
-                <form action="{{ route('merchant.products.store') }}" method="POST" enctype="multipart/form-data">
+                <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9; background-color: #ffffff;">
+                    <h3 style="font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0;">Formulir Makanan Surplus Baru</h3>
+                </div>
+
+                <form action="{{ url('/merchant/products') }}" method="POST" enctype="multipart/form-data" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
                     @csrf
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-stone-700 mb-1">Nama Produk / Makanan</label>
-                        <input type="text" name="name" value="{{ old('name') }}" class="w-full border-stone-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="Contoh: Roti Croissant Cokelat (Pack of 3)" required>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-stone-700 mb-1">Harga Asli (Rp)</label>
-                            <input type="number" name="normal_price" value="{{ old('normal_price') }}" class="w-full border-stone-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="35000" required>
+                    <!-- Notifikasi Error Validasi -->
+                    @if ($errors->any())
+                        <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 1rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700;">
+                            <p style="margin: 0 0 0.5rem 0;">⚠️ Gagal menyimpan produk. Periksa kembali form berikut:</p>
+                            <ul style="margin: 0; padding-left: 1.25rem;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    @endif
+
+                    <!-- Nama Makanan -->
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 0.5rem;">
+                            🍲 Nama Produk / Makanan <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Roti Croissant Cokelat (Pack of 3)" 
+                               style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.9rem; font-weight: 600; color: #0f172a; outline: none; box-sizing: border-box;">
+                    </div>
+
+                    <!-- Grid Harga Asli, Harga Diskon, & Stok -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
+                        <!-- Harga Asli -->
+                       <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 0.5rem;">
+                                🏷️ Harga Asli (Rp) <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="number" name="normal_price" value="{{ old('normal_price') }}" required placeholder="35000" 
+                                style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.9rem; font-weight: 600; color: #0f172a; outline: none; box-sizing: border-box;">
+                        </div>
+
+                        <!-- Harga Diskon -->
                         <div>
-                            <label class="block text-sm font-medium text-stone-700 mb-1">Harga LastCall / Diskon (Rp)</label>
-                            <input type="number" name="discount_price" value="{{ old('discount_price') }}" class="w-full border-stone-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="15000" required>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #ea580c; margin-bottom: 0.5rem;">
+                                🔥 Harga LastCall / Diskon (Rp) <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="number" name="discount_price" value="{{ old('discount_price') }}" required placeholder="15000" 
+                                   style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 2px solid #ffedd5; background-color: #fff7ed; font-size: 0.9rem; font-weight: 800; color: #ea580c; outline: none; box-sizing: border-box;">
+                        </div>
+
+                        <!-- Stok -->
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 0.5rem;">
+                                📦 Stok Surplus Hari Ini <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="number" name="stock" value="{{ old('stock', 1) }}" required min="1" 
+                                   style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.9rem; font-weight: 600; color: #0f172a; outline: none; box-sizing: border-box;">
                         </div>
                     </div>
 
+                    <!-- Upload Foto Makanan Custom -->
                     <div>
-                        <label class="block text-sm font-medium text-stone-700 mb-1">Jumlah Stok Surplus Hari Ini</label>
-                        <input type="number" name="stock" value="{{ old('stock', 1) }}" min="1" class="w-full border-stone-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500" required>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 0.5rem;">
+                            📸 Foto Makanan
+                        </label>
+                        <div style="border: 2px dashed #cbd5e1; border-radius: 0.875rem; padding: 1.25rem; text-align: center; background-color: #f8fafc; cursor: pointer; position: relative;">
+                            <input type="file" name="image" accept="image/*" id="imageInput" onchange="previewFileName(this)"
+                                   style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;">
+                            <div id="uploadContent">
+                                <span style="font-size: 1.75rem; display: block; margin-bottom: 0.25rem;">📷</span>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #ea580c;">Klik untuk upload foto makanan</span>
+                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Format JPG, PNG, atau WEBP (Maksimal 2MB)</p>
+                            </div>
+                            <span id="fileNameDisplay" style="display: none; font-size: 0.85rem; font-weight: 800; color: #166534; background-color: #f0fdf4; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #bbf7d0;"></span>
+                        </div>
                     </div>
 
+                    <!-- Deskripsi Makanan -->
                     <div>
-                        <label class="block text-sm font-medium text-stone-700 mb-1">Foto Makanan</label>
-                        <input type="file" name="image" accept="image/*" class="w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 border border-stone-300 rounded-md">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 0.5rem;">
+                            📝 Deskripsi Ringkas
+                        </label>
+                        <textarea name="description" rows="3" placeholder="Kondisi makanan masih sangat baik, dibuat pagi hari ini..." 
+                                  style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.875rem; font-weight: 500; color: #0f172a; outline: none; box-sizing: border-box; font-family: inherit; resize: vertical;">{{ old('description') }}</textarea>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-stone-700 mb-1">Deskripsi Ringkas</label>
-                        <textarea name="description" rows="3" class="w-full border-stone-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="Kondisi makanan masih sangat baik, dibuat pagi hari ini...">{{ old('description') }}</textarea>
-                    </div>
-
-                    <div class="flex justify-between items-center pt-3">
-                        <a href="{{ route('merchant.products.index') }}" class="text-sm text-stone-600 hover:underline">Batal</a>
-                        <button type="submit" class="bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-700 transition-colors shadow-sm">
-                            Simpan Produk Surplus
+                    <!-- Footer Action Buttons -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 0.5rem;">
+                        <a href="{{ url('/merchant/products') }}" style="color: #64748b; font-size: 0.875rem; font-weight: 700; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 0.75rem; background-color: #f1f5f9;">
+                            Batal
+                        </a>
+                        <button type="submit" style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); color: white; font-weight: 800; font-size: 0.9rem; padding: 0.75rem 1.75rem; border-radius: 0.75rem; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
+                            ✨ Simpan Produk Surplus
                         </button>
                     </div>
+
                 </form>
 
             </div>
+
         </div>
     </div>
+
+    <script>
+        function previewFileName(input) {
+            const uploadContent = document.getElementById('uploadContent');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                uploadContent.style.display = 'none';
+                fileNameDisplay.style.display = 'inline-block';
+                fileNameDisplay.innerText = '📄 Foto terpilih: ' + input.files[0].name;
+            }
+        }
+    </script>
 </x-app-layout>

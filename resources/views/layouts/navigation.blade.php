@@ -1,20 +1,37 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-xs">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Logo -->
+                <!-- Logo Branding LastCall (Persis Welcome Page) -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ Auth::user()->role === 'merchant' ? url('/merchant/dashboard') : url('/dashboard') }}" 
+                    class="text-2xl font-extrabold text-orange-600 no-underline"
+                    style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                        LastCall 🥐
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if(Auth::user()->role === 'merchant')
+                        <x-nav-link :href="url('/merchant/dashboard')" :active="request()->is('merchant/dashboard')">
+                            {{ __('Dashboard Merchant') }}
+                        </x-nav-link>
+                        <x-nav-link :href="url('/merchant/store')" :active="request()->is('merchant/store*')">
+                            {{ __('Profil Toko') }}
+                        </x-nav-link>
+                        <x-nav-link :href="url('/merchant/products')" :active="request()->is('merchant/products*')">
+                            {{ __('Kelola Produk') }}
+                        </x-nav-link>
+                        <x-nav-link :href="url('/merchant/orders')" :active="request()->is('merchant/orders*')">
+                            {{ __('📦 Pesanan Masuk') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="url('/dashboard')" :active="request()->is('dashboard')">
+                            {{ __('Katalog Makanan') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -22,7 +39,8 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3.5 py-2 border border-stone-200 text-xs font-bold rounded-xl text-stone-700 bg-stone-50 hover:bg-stone-100 hover:text-orange-600 focus:outline-none transition ease-in-out duration-150 gap-1.5">
+                            <span class="text-stone-400">👤</span>
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
@@ -35,7 +53,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Pengaturan Akun') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -45,43 +63,55 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Keluar / Logout') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
+            <!-- Hamburger (Mobile) -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 focus:outline-none focus:bg-stone-100 focus:text-stone-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'inline-flex': open, 'hidden': ! open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <!-- Responsive Navigation Menu (Mobile) -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-stone-200 bg-stone-50">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @if(Auth::user()->role === 'merchant')
+                <x-responsive-nav-link :href="url('/merchant/dashboard')" :active="request()->is('merchant/dashboard')">
+                    {{ __('Dashboard Merchant') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="url('/merchant/store')" :active="request()->is('merchant/store*')">
+                    {{ __('Profil Toko') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="url('/merchant/products')" :active="request()->is('merchant/products*')">
+                    {{ __('Kelola Produk') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="url('/dashboard')" :active="request()->is('dashboard')">
+                    {{ __('Katalog Makanan') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
+        <div class="pt-4 pb-1 border-t border-stone-200">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                <div class="font-bold text-base text-stone-800">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-sm text-stone-500">{{ Auth::user()->email }}</div>
             </div>
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Pengaturan Akun') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -91,7 +121,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Keluar / Logout') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

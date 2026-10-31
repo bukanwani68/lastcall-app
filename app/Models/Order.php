@@ -18,15 +18,10 @@ class Order extends Model
         'pickup_code',
         'status',
     ];
-
+    
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function store()
-    {
-        return $this->belongsTo(Store::class);
     }
 
     public function product()
